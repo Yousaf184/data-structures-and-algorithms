@@ -47,6 +47,11 @@ public class Closest {
                 } else if (distance < minDistance) {
                     minDistance = distance;
                 } else {
+                    // if current distance is greater than
+                    // minDistance, break the loop because
+                    // points are sorted w.r.t Y coordinate
+                    // so subsequent points will be at greater distance
+                    // than current point at index i
                     break;
                 }
             }
@@ -65,14 +70,24 @@ public class Closest {
         return Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
     }
 
-    static double minDistanceInSublist(List<Point> list, int left, int right) {
+    static double getMinDistance(List<Point> list, int left, int right) {
+        // when fill list is passed to this function,
+        // left and right will be -1
+        // this is done to remove duplicate function that took
+        // left and right index parameters
+        if (left == -1 && right == -1) {
+            left = 0;
+            right = list.size();
+        }
+
         if (right - left <= 3) {
             return computeMinDistance(list, left, right);
         }
 
         int mid = (left + right) / 2;
-        double distanceLeft = minDistanceInSublist(list, left, mid);
-        double distanceRight = minDistanceInSublist(list, mid, right);
+
+        double distanceLeft = getMinDistance(list, left, mid);
+        double distanceRight = getMinDistance(list, mid, right);
 
         double currentMin = Math.min(distanceLeft, distanceRight);
         double midLine = (list.get(mid - 1).x + list.get(mid).x) / (double) 2;
@@ -80,31 +95,7 @@ public class Closest {
         List<Point> filteredList = getFilteredList(list, left, right, midLine, currentMin);
 
         if (filteredList.size() > 0) {
-            Collections.sort(filteredList);
-            currentMin = Math.min(currentMin, computeHybridMin(filteredList));
-        }
-
-        return currentMin;
-    }
-
-    static double getMinDistance(List<Point> list) {
-        if (list.size() <= 3) {
-            return computeMinDistance(list, 0, list.size());
-        }
-
-        int left = 0;
-        int right = list.size();
-        int mid = (left + right) / 2;
-
-        double distanceLeft = minDistanceInSublist(list, left, mid);
-        double distanceRight = minDistanceInSublist(list, mid, right);
-
-        double currentMin = Math.min(distanceLeft, distanceRight);
-        double midLine = (list.get(mid - 1).x + list.get(mid).x) / (double) 2;
-
-        List<Point> filteredList = getFilteredList(list, left, right, midLine, currentMin);
-
-        if (filteredList.size() > 0) {
+            // sort points w.r.t Y coordinate
             Collections.sort(filteredList);
             currentMin = Math.min(currentMin, computeHybridMin(filteredList));
         }
@@ -119,7 +110,7 @@ public class Closest {
             points.add(new Point(x[i], y[i]));
         }
 
-        // sort points w.r.t X
+        // sort points w.r.t X coordinate
         points.sort((p1, p2) -> {
             if (p1.x > p2.x) {
                 return 1;
@@ -130,7 +121,7 @@ public class Closest {
             return 0;
         });
 
-        double distance = getMinDistance(points);
+        double distance = getMinDistance(points, -1, -1);
 
         // round up to 4 decimal places
         DecimalFormat df = new DecimalFormat("#.####");
@@ -149,6 +140,8 @@ public class Closest {
             x[i] = nextInt();
             y[i] = nextInt();
         }
+//        int[] x = {0,5,3,7};
+//        int[] y = {0,6,4,2};
 
         System.out.println(minimalDistance(x, y));
         writer.close();
