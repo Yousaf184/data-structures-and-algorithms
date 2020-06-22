@@ -140,8 +140,6 @@ public class Closest {
             x[i] = nextInt();
             y[i] = nextInt();
         }
-//        int[] x = {0,5,3,7};
-//        int[] y = {0,6,4,2};
 
         System.out.println(minimalDistance(x, y));
         writer.close();
