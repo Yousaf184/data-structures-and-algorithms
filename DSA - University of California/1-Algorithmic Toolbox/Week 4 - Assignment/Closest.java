@@ -71,7 +71,7 @@ public class Closest {
     }
 
     static double getMinDistance(List<Point> list, int left, int right) {
-        // when fill list is passed to this function,
+        // initially when full list is passed to this function,
         // left and right will be -1
         // this is done to remove duplicate function that took
         // left and right index parameters
